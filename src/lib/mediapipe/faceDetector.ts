@@ -70,16 +70,24 @@ export async function detectFaces(
 
     const detector = await initializeFaceDetector();
 
-    // The detect method returns a result synchronously
-    const result = detector.detect(imageElement);
+    // Suppress TensorFlow Lite INFO messages that are logged as errors
+    const originalError = console.error;
+    console.error = (...args: any[]) => {
+      const message = args[0]?.toString() || "";
+      if (message.includes("INFO:") && message.includes("TensorFlow")) {
+        return; // Suppress TensorFlow INFO messages
+      }
+      originalError.apply(console, args);
+    };
 
-    // Log success for debugging
-    console.log(
-      `✓ Face detection complete: Found ${result.detections.length} face(s)`,
-    );
-
-    // Return the detections array
-    return result.detections || [];
+    try {
+      // The detect method returns a result synchronously
+      const result = detector.detect(imageElement);
+      return result.detections || [];
+    } finally {
+      // Restore original console.error
+      console.error = originalError;
+    }
   } catch (error) {
     console.error("✗ Error detecting faces:", error);
     throw error;

@@ -68,16 +68,24 @@ export async function detectLandmarks(
 
     const landmarker = await initializeFaceLandmarker();
 
-    // The detect method returns a result synchronously
-    const result = landmarker.detect(imageElement);
+    // Suppress TensorFlow Lite INFO messages that are logged as errors
+    const originalError = console.error;
+    console.error = (...args: any[]) => {
+      const message = args[0]?.toString() || "";
+      if (message.includes("INFO:") && message.includes("TensorFlow")) {
+        return; // Suppress TensorFlow INFO messages
+      }
+      originalError.apply(console, args);
+    };
 
-    // Log success for debugging
-    const landmarkCount = result.faceLandmarks?.[0]?.length || 0;
-    console.log(
-      `✓ Landmark detection complete: Found ${landmarkCount} landmarks`,
-    );
-
-    return result;
+    try {
+      // The detect method returns a result synchronously
+      const result = landmarker.detect(imageElement);
+      return result;
+    } finally {
+      // Restore original console.error
+      console.error = originalError;
+    }
   } catch (error) {
     console.error("✗ Error detecting landmarks:", error);
     throw error;
