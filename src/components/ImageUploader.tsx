@@ -28,8 +28,11 @@ export default function ImageUploader({
     reader.onload = (e) => {
       img.onload = () => {
         // Ensure image has dimensions before passing to validator
-        if (img.width > 0 && img.height > 0) {
-          onImageUpload(img, file);
+        if (img.width > 0 && img.height > 0 && img.complete) {
+          // Small delay to ensure image is fully rendered
+          setTimeout(() => {
+            onImageUpload(img, file);
+          }, 100);
         } else {
           console.error("Image has invalid dimensions");
           alert("Failed to load image. Please try another file.");

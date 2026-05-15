@@ -53,9 +53,22 @@ export async function detectFaces(
   imageElement: HTMLImageElement,
 ): Promise<Detection[]> {
   try {
+    // Validate image element
+    if (
+      !imageElement ||
+      !imageElement.complete ||
+      imageElement.naturalWidth === 0
+    ) {
+      throw new Error("Image element is not ready or invalid");
+    }
+
     const detector = await initializeFaceDetector();
-    const detections = detector.detect(imageElement);
-    return detections.detections || [];
+
+    // The detect method returns a result synchronously
+    const result = detector.detect(imageElement);
+
+    // Return the detections array
+    return result.detections || [];
   } catch (error) {
     console.error("Error detecting faces:", error);
     throw error;

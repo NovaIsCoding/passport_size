@@ -54,8 +54,20 @@ export async function detectLandmarks(
   imageElement: HTMLImageElement,
 ): Promise<FaceLandmarkerResult> {
   try {
+    // Validate image element
+    if (
+      !imageElement ||
+      !imageElement.complete ||
+      imageElement.naturalWidth === 0
+    ) {
+      throw new Error("Image element is not ready or invalid");
+    }
+
     const landmarker = await initializeFaceLandmarker();
+
+    // The detect method returns a result synchronously
     const result = landmarker.detect(imageElement);
+
     return result;
   } catch (error) {
     console.error("Error detecting landmarks:", error);
