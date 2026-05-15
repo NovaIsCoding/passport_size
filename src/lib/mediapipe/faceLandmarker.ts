@@ -34,11 +34,10 @@ export async function initializeFaceLandmarker(): Promise<FaceLandmarker> {
       baseOptions: {
         modelAssetPath:
           "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
-        delegate: "GPU",
       },
       runningMode: "IMAGE",
-      outputFaceBlendshapes: true,
-      outputFacialTransformationMatrixes: true,
+      outputFaceBlendshapes: false,
+      outputFacialTransformationMatrixes: false,
       numFaces: 1,
     });
 
@@ -54,9 +53,14 @@ export async function initializeFaceLandmarker(): Promise<FaceLandmarker> {
 export async function detectLandmarks(
   imageElement: HTMLImageElement,
 ): Promise<FaceLandmarkerResult> {
-  const landmarker = await initializeFaceLandmarker();
-  const result = landmarker.detect(imageElement);
-  return result;
+  try {
+    const landmarker = await initializeFaceLandmarker();
+    const result = landmarker.detect(imageElement);
+    return result;
+  } catch (error) {
+    console.error("Error detecting landmarks:", error);
+    throw error;
+  }
 }
 
 export function cleanupFaceLandmarker(): void {

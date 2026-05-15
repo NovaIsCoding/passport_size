@@ -35,7 +35,6 @@ export async function initializeFaceDetector(): Promise<FaceDetector> {
       baseOptions: {
         modelAssetPath:
           "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite",
-        delegate: "GPU",
       },
       runningMode: "IMAGE",
       minDetectionConfidence: 0.5,
@@ -53,9 +52,14 @@ export async function initializeFaceDetector(): Promise<FaceDetector> {
 export async function detectFaces(
   imageElement: HTMLImageElement,
 ): Promise<Detection[]> {
-  const detector = await initializeFaceDetector();
-  const detections = detector.detect(imageElement);
-  return detections.detections;
+  try {
+    const detector = await initializeFaceDetector();
+    const detections = detector.detect(imageElement);
+    return detections.detections || [];
+  } catch (error) {
+    console.error("Error detecting faces:", error);
+    throw error;
+  }
 }
 
 export function cleanupFaceDetector(): void {

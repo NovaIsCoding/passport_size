@@ -22,13 +22,29 @@ export default function ImageUploader({
     }
 
     const img = new Image();
+    img.crossOrigin = "anonymous"; // Enable CORS for canvas operations
     const reader = new FileReader();
 
     reader.onload = (e) => {
       img.onload = () => {
-        onImageUpload(img, file);
+        // Ensure image has dimensions before passing to validator
+        if (img.width > 0 && img.height > 0) {
+          onImageUpload(img, file);
+        } else {
+          console.error("Image has invalid dimensions");
+          alert("Failed to load image. Please try another file.");
+        }
+      };
+      img.onerror = () => {
+        console.error("Failed to load image");
+        alert("Failed to load image. Please try another file.");
       };
       img.src = e.target?.result as string;
+    };
+
+    reader.onerror = () => {
+      console.error("Failed to read file");
+      alert("Failed to read file. Please try again.");
     };
 
     reader.readAsDataURL(file);

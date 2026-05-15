@@ -28,6 +28,8 @@ export default function ValidationResults({
     { label: "Face Size", result: validation.results.faceSize },
     { label: "Eye Level", result: validation.results.eyeLevel },
     { label: "Head Tilt", result: validation.results.headTilt },
+    { label: "Forehead Visible", result: validation.results.foreheadVisible },
+    { label: "Ears Visible", result: validation.results.earsVisible },
     { label: "Image Dimensions", result: validation.results.imageDimensions },
     { label: "Image Quality", result: validation.results.imageQuality },
   ];
@@ -108,6 +110,24 @@ export default function ValidationResults({
               <span className="text-gray-600">Face Center Y:</span>
               <span className="ml-2 font-medium">
                 {validation.measurements.faceCenter.y.toFixed(0)}px
+              </span>
+            </div>
+            <div>
+              <span className="text-gray-600">Forehead:</span>
+              <span className="ml-2 font-medium">
+                {validation.measurements.foreheadVisible ? "✓ Visible" : "✗ Not visible"}
+              </span>
+            </div>
+            <div>
+              <span className="text-gray-600">Ears:</span>
+              <span className="ml-2 font-medium">
+                {validation.measurements.leftEarVisible && validation.measurements.rightEarVisible
+                  ? "✓ Both visible"
+                  : validation.measurements.leftEarVisible
+                    ? "✓ Left visible"
+                    : validation.measurements.rightEarVisible
+                      ? "✓ Right visible"
+                      : "✗ Not visible"}
               </span>
             </div>
           </div>

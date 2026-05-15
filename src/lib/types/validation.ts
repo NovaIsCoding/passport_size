@@ -31,6 +31,8 @@ export interface PassportPhotoValidation {
     faceSize: ValidationResult;
     eyeLevel: ValidationResult;
     headTilt: ValidationResult;
+    foreheadVisible: ValidationResult;
+    earsVisible: ValidationResult;
     imageDimensions: ValidationResult;
     imageQuality: ValidationResult;
   };
@@ -40,6 +42,9 @@ export interface PassportPhotoValidation {
     eyeLevel: number;
     headTilt: number;
     faceCenter: { x: number; y: number };
+    foreheadVisible: boolean;
+    leftEarVisible: boolean;
+    rightEarVisible: boolean;
   };
 }
 
