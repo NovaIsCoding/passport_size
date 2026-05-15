@@ -40,6 +40,8 @@ export function usePassportValidator() {
     setError(null);
     setValidationResult(null);
 
+    console.log("🎯 Starting passport photo validation...");
+
     try {
       // Ensure image is loaded and has valid dimensions
       if (!imageElement.complete || imageElement.naturalWidth === 0) {
@@ -236,6 +238,13 @@ export function usePassportValidator() {
       };
 
       setValidationResult(validation);
+
+      console.log(
+        `✅ Validation complete! Overall result: ${validation.overall ? "PASSED ✓" : "NEEDS IMPROVEMENT ⚠️"}`,
+      );
+      console.log(
+        `📊 Results: ${Object.values(validation.results).filter((r) => r.passed).length}/${Object.keys(validation.results).length} checks passed`,
+      );
     } catch (err) {
       console.error("Validation error:", err);
       setError(err instanceof Error ? err.message : "Failed to validate photo");

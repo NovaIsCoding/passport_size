@@ -26,6 +26,8 @@ export async function initializeFaceLandmarker(): Promise<FaceLandmarker> {
   isInitializing = true;
 
   try {
+    console.log("🔄 Initializing MediaPipe Face Landmarker...");
+
     const vision = await FilesetResolver.forVisionTasks(
       "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm",
     );
@@ -41,6 +43,7 @@ export async function initializeFaceLandmarker(): Promise<FaceLandmarker> {
       numFaces: 1,
     });
 
+    console.log("✓ Face Landmarker initialized successfully!");
     isInitializing = false;
     return faceLandmarker;
   } catch (error) {
@@ -68,9 +71,15 @@ export async function detectLandmarks(
     // The detect method returns a result synchronously
     const result = landmarker.detect(imageElement);
 
+    // Log success for debugging
+    const landmarkCount = result.faceLandmarks?.[0]?.length || 0;
+    console.log(
+      `✓ Landmark detection complete: Found ${landmarkCount} landmarks`,
+    );
+
     return result;
   } catch (error) {
-    console.error("Error detecting landmarks:", error);
+    console.error("✗ Error detecting landmarks:", error);
     throw error;
   }
 }

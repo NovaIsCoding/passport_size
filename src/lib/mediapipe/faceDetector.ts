@@ -27,6 +27,11 @@ export async function initializeFaceDetector(): Promise<FaceDetector> {
   isInitializing = true;
 
   try {
+    console.log("🔄 Initializing MediaPipe Face Detector...");
+    console.log(
+      "ℹ️  Note: You may see MediaPipe/TensorFlow info logs - these are normal!",
+    );
+
     const vision = await FilesetResolver.forVisionTasks(
       "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm",
     );
@@ -40,6 +45,7 @@ export async function initializeFaceDetector(): Promise<FaceDetector> {
       minDetectionConfidence: 0.5,
     });
 
+    console.log("✓ Face Detector initialized successfully!");
     isInitializing = false;
     return faceDetector;
   } catch (error) {
@@ -67,10 +73,15 @@ export async function detectFaces(
     // The detect method returns a result synchronously
     const result = detector.detect(imageElement);
 
+    // Log success for debugging
+    console.log(
+      `✓ Face detection complete: Found ${result.detections.length} face(s)`,
+    );
+
     // Return the detections array
     return result.detections || [];
   } catch (error) {
-    console.error("Error detecting faces:", error);
+    console.error("✗ Error detecting faces:", error);
     throw error;
   }
 }
