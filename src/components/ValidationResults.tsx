@@ -115,13 +115,16 @@ export default function ValidationResults({
             <div>
               <span className="text-gray-600">Forehead:</span>
               <span className="ml-2 font-medium">
-                {validation.measurements.foreheadVisible ? "✓ Visible" : "✗ Not visible"}
+                {validation.measurements.foreheadVisible
+                  ? "✓ Visible"
+                  : "✗ Not visible"}
               </span>
             </div>
             <div>
               <span className="text-gray-600">Ears:</span>
               <span className="ml-2 font-medium">
-                {validation.measurements.leftEarVisible && validation.measurements.rightEarVisible
+                {validation.measurements.leftEarVisible &&
+                validation.measurements.rightEarVisible
                   ? "✓ Both visible"
                   : validation.measurements.leftEarVisible
                     ? "✓ Left visible"

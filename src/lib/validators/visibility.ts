@@ -45,7 +45,8 @@ export function validateForeheadVisible(
   if (foreheadPercentage < 15) {
     return {
       passed: false,
-      message: "Forehead is not fully visible. Please ensure your hairline is visible.",
+      message:
+        "Forehead is not fully visible. Please ensure your hairline is visible.",
       severity: "error",
     };
   }
@@ -67,7 +68,8 @@ export function validateForeheadVisible(
 
 /**
  * Validates that ears are visible in the photo
- * MediaPipe landmarks for ears: left ear (234), right ear (454)
+ * Note: MediaPipe's ear detection is limited for front-facing photos
+ * This validation uses face contour landmarks as a proxy
  */
 export function validateEarsVisible(
   landmarks: FaceLandmarkerResult,
@@ -82,35 +84,29 @@ export function validateEarsVisible(
 
   const faceLandmarks = landmarks.faceLandmarks[0];
 
-  // Ear landmarks
-  const leftEar = faceLandmarks[234]; // Left ear
-  const rightEar = faceLandmarks[454]; // Right ear
+  // Ear region landmarks (face contour near ears)
+  const leftEar = faceLandmarks[234]; // Left ear region
+  const rightEar = faceLandmarks[454]; // Right ear region
 
-  // Face outer contour for reference
-  const leftFaceEdge = faceLandmarks[234];
-  const rightFaceEdge = faceLandmarks[454];
+  // Face inner reference points
   const leftCheek = faceLandmarks[123];
   const rightCheek = faceLandmarks[352];
 
-  // Calculate visibility based on z-coordinate (depth)
-  // Ears should be visible (not too far back)
-  const leftEarVisibility = leftEar.z !== undefined ? Math.abs(leftEar.z) : 0;
-  const rightEarVisibility = rightEar.z !== undefined ? Math.abs(rightEar.z) : 0;
-
-  // Check if ears are visible based on their position relative to face
   const leftCheekX = leftCheek.x;
   const rightCheekX = rightCheek.x;
   const leftEarX = leftEar.x;
   const rightEarX = rightEar.x;
 
-  // Ears should be visible on the sides
-  const leftEarVisible = leftEarX < leftCheekX - 0.02; // Left ear should be to the left
-  const rightEarVisible = rightEarX > rightCheekX + 0.02; // Right ear should be to the right
+  // Check if ear regions are visible on the sides
+  // For front-facing passport photos, we expect some ear visibility
+  const leftEarVisible = leftEarX < leftCheekX - 0.02; // Left ear region extends to the left
+  const rightEarVisible = rightEarX > rightCheekX + 0.02; // Right ear region extends to the right
 
   if (!leftEarVisible && !rightEarVisible) {
     return {
-      passed: false,
-      message: "Ears are not visible. Please ensure at least one ear is visible or face is positioned correctly.",
+      passed: true,
+      message:
+        "Ear visibility cannot be confirmed. This may be acceptable for passport photos if face is front-facing.",
       severity: "warning",
     };
   }
@@ -133,9 +129,10 @@ export function validateEarsVisible(
 /**
  * Check individual ear visibility for measurements
  */
-export function checkEarVisibility(
-  landmarks: FaceLandmarkerResult,
-): { leftEar: boolean; rightEar: boolean } {
+export function checkEarVisibility(landmarks: FaceLandmarkerResult): {
+  leftEar: boolean;
+  rightEar: boolean;
+} {
   if (!landmarks.faceLandmarks || landmarks.faceLandmarks.length === 0) {
     return { leftEar: false, rightEar: false };
   }
